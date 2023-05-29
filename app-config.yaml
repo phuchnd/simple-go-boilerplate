@@ -1,0 +1,13 @@
+server:
+  grpc_port: 50001
+  name: "product-service"
+  env: "local"
+db:
+  mysql:
+    host: localhost
+    port: 3306
+    username: product
+    password: secret
+    database: product
+    max_idle_conns: 10
+    max_open_conns: 100

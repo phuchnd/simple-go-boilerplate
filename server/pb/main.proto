@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package product_management;
+
+option go_package = "github.com/phuchnd/core-product-management/server/gprc";
+
+service ProductManagementService {
+  rpc ListUnitOfMeasurements(ListUnitOfMeasurementsRequest) returns (ListUnitOfMeasurementsResponse) {}
+}
+
+message ListUnitOfMeasurementsRequest {}
+
+message ListUnitOfMeasurementsResponse {
+  repeated UnitOfMeasurement Entries = 1;
+}
+
+message UnitOfMeasurement {
+  int64 ID = 1;
+  string Name = 2;
+}
