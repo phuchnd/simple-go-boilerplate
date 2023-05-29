@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	pb "github.com/phuchnd/core-product-management/server/pb"
+	pb "github.com/phuchnd/simple-go-boilerplate/server/pb"
 )
 
 func NewProductManagementService() *ProductManagementService {

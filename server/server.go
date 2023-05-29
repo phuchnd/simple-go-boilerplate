@@ -2,9 +2,9 @@ package server
 
 import (
 	"fmt"
-	"github.com/phuchnd/core-product-management/internal/config"
-	"github.com/phuchnd/core-product-management/internal/service"
-	pb "github.com/phuchnd/core-product-management/server/pb"
+	"github.com/phuchnd/simple-go-boilerplate/internal/config"
+	"github.com/phuchnd/simple-go-boilerplate/internal/service"
+	pb "github.com/phuchnd/simple-go-boilerplate/server/pb"
 	"google.golang.org/grpc"
 	"net"
 )

@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"github.com/phuchnd/core-product-management/server"
+	"github.com/phuchnd/simple-go-boilerplate/server"
 	"github.com/spf13/cobra"
 )
 

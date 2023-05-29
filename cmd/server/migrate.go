@@ -1,19 +1,8 @@
-/*
- * Copyright (C) 2023 by Enterprise Technology, Viet Thai International
- * All Rights Reserved.
- *
- * This source code is protected under international copyright law.  All rights
- * reserved and protected by the copyright holders.
- * This file is confidential and only available to authorized individuals with the
- * permission of the copyright holders.  If you encounter this file and do not have
- * permission, please contact the copyright holders and delete this file.
- */
-
 package server
 
 import (
 	"fmt"
-	"github.com/phuchnd/core-product-management/internal/db/migrations"
+	"github.com/phuchnd/simple-go-boilerplate/internal/db/migrations"
 	"log"
 
 	"github.com/spf13/cobra"

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package product_management;
 
-option go_package = "github.com/phuchnd/core-product-management/server/gprc";
+option go_package = "github.com/phuchnd/simple-go-boilerplate/server/gprc";
 
 service ProductManagementService {
   rpc ListUnitOfMeasurements(ListUnitOfMeasurementsRequest) returns (ListUnitOfMeasurementsResponse) {}

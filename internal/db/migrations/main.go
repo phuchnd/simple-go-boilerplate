@@ -3,7 +3,7 @@ package migrations
 import (
 	"embed"
 	"fmt"
-	"github.com/phuchnd/core-product-management/internal/config"
+	"github.com/phuchnd/simple-go-boilerplate/internal/config"
 	migrate "github.com/rubenv/sql-migrate"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
