@@ -18,6 +18,7 @@ func init() {
 	rootCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(migrateCmd)
 
+	runCmd.Flags().StringP("type", "t", "http", "Server Type.")
 	migrateCmd.Flags().StringP("direction", "d", "up", "Migration direction.")
 }
 

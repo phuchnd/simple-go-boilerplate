@@ -1,13 +1,14 @@
 server:
-  grpc_port: 50001
-  name: "product-service"
+  http_port: 8088
+  grpc_port: 3033
+  name: "simple-go-service"
   env: "local"
 db:
   mysql:
     host: localhost
     port: 3306
-    username: product
+    username: root
     password: secret
-    database: product
+    database: example
     max_idle_conns: 10
     max_open_conns: 100

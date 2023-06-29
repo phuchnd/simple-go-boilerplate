@@ -9,13 +9,24 @@ go mod download
 ```shell
 docker-compose up -d
 ```
-
-### Start service with default config
+### Migrate up database
 ```shell
-go run ./cmd run
+go run ./cmd migrate -d up
+```
+### Migrate down database
+```shell
+go run ./cmd migrate -d down
+```
+### Start HTTP service with default config
+```shell
+go run ./cmd run -t http
+```
+### Start GRPC service with default config
+```shell
+go run ./cmd run -t grpc
 ```
 
-### Start service with customer config file
+### Start service with customize config file
 ```shell
-APP_CONFIG_DIR=<path-to-config-file> go run ./cmd server
+APP_CONFIG_DIR=<path-to-config-file> go run ./cmd run
 ```

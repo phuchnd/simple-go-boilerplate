@@ -1,0 +1,10 @@
+# Ignore the dbdata directory for MySQL data
+/dbdata
+
+# Ignore any other generated or temporary files
+.idea
+.DS_Store
+.vscode
+local
+Thumbs.db
+/app

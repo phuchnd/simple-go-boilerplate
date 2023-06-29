@@ -21,11 +21,15 @@ var migrateCmd = &cobra.Command{
 
 		switch direction {
 		case "up":
-			_, _ = migrator.Up()
+			_, err = migrator.Up()
 		case "down":
-			_, _ = migrator.Down()
+			_, err = migrator.Down()
 		default:
 			log.Fatalln("unsupported migration direction")
+		}
+
+		if err != nil {
+			panic(fmt.Errorf("failed to execute db migrator: %w \n", err))
 		}
 	},
 }

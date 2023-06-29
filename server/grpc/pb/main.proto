@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package simple_go_boilerplate;
+
+option go_package = "github.com/phuchnd/simple-go-boilerplate/server/gprc/pb";
+
+import "google/protobuf/timestamp.proto";
+
+service SimpleGoBoilerplateService {
+  rpc ListBooks(ListBookRequest) returns (ListBookResponse) {}
+}
+
+message ListBookRequest {
+  uint32 Limit = 1;
+  uint64 Cursor = 2;
+}
+
+message ListBookResponse {
+  repeated Book Entries = 1;
+  uint32 Total = 2;
+  uint64 NextCursor = 3;
+}
+
+message Book {
+  uint64 ID = 1;
+  string Title = 2;
+  string Author = 3;
+  uint32 PublicationYear = 4;
+  uint64 Price = 5;
+  string Description = 6;
+  BookType Type = 7;
+  google.protobuf.Timestamp CreatedAt = 8;
+  google.protobuf.Timestamp UpdatedAt = 9;
+}
+
+enum BookType {
+  BOOK_TYPE_UNKNOWN = 0;
+  BOOK_TYPE_FICTION = 1;
+  BOOK_TYPE_NONFICTION = 2;
+  BOOK_TYPE_SCI_FI = 3;
+  BOOK_TYPE_MYSTERY = 4;
+  BOOK_TYPE_THRILLER = 5;
+}

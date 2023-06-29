@@ -1,6 +1,6 @@
 gen-proto:
 	protoc \
-		--go_out=server/grpc --go_opt=paths=source_relative \
-		--go-grpc_out=server/grpc --go-grpc_opt=paths=source_relative \
-		--proto_path=server/grpc \
-		server/grpc/*.proto
+		--go_out=server/grpc/pb --go_opt=paths=source_relative \
+		--go-grpc_out=server/grpc/pb --go-grpc_opt=paths=source_relative \
+		--proto_path=server/grpc/pb \
+		server/grpc/pb/*.proto
