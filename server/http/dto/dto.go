@@ -7,8 +7,8 @@ type Error struct {
 }
 
 type ListBookRequest struct {
-	Limit  uint32 `json:"limit"`
-	Cursor uint64 `json:"cursor"`
+	Limit  uint32 `json:"limit" uri:"limit"`
+	Cursor uint64 `json:"cursor"  uri:"cursor"`
 }
 
 type ListBookResponse struct {

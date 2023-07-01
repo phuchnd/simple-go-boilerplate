@@ -8,7 +8,7 @@ type GetConfigFunc func(v *viper.Viper) interface{}
 // ConfigOpt is a configuration on a config.
 type ConfigOpt func(c *configImpl)
 
-//go:generate mockery --name=Config --case=snake
+//go:generate mockery --name=IConfig --case=snake
 type IConfig interface {
 	SetDefault(v *viper.Viper)
 	Get(v *viper.Viper) interface{}

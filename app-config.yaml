@@ -3,6 +3,12 @@ server:
   grpc_port: 3033
   name: "simple-go-service"
   env: "local"
+external:
+  book:
+    host: localhost
+    port: 3033
+    max_retries: 3
+    backoff_delays_ms: 100
 db:
   mysql:
     host: localhost
@@ -12,3 +18,5 @@ db:
     database: example
     max_idle_conns: 10
     max_open_conns: 100
+    max_retry: 5
+    backoff_delays_ms: 200

@@ -6,6 +6,7 @@ import (
 	"github.com/phuchnd/simple-go-boilerplate/server/http/dto"
 	"github.com/phuchnd/simple-go-boilerplate/server/http/middlewares"
 	"net/http"
+	"strconv"
 )
 
 func (s *httpServerImpl) initRouter() *gin.Engine {
@@ -13,7 +14,7 @@ func (s *httpServerImpl) initRouter() *gin.Engine {
 
 	// Heath Check Router
 	r.GET("/health", func(c *gin.Context) {
-		if s.isReady {
+		if s.isRunning {
 			c.JSON(http.StatusOK, map[string]string{
 				"message": "service ready",
 			})
@@ -30,6 +31,7 @@ func (s *httpServerImpl) initRouter() *gin.Engine {
 	v0.Use(
 		middlewares.Tracing(),
 		middlewares.RequestLogging(),
+		middlewares.PanicRecovery(),
 	)
 	{
 		v0.GET("/books", s.listBookV0)
@@ -40,9 +42,11 @@ func (s *httpServerImpl) initRouter() *gin.Engine {
 
 func (s *httpServerImpl) listBookV0(c *gin.Context) {
 	var req dto.ListBookRequest
-	if err := c.BindUri(&req); err != nil {
-		c.AbortWithError(http.StatusUnprocessableEntity, err)
-		return
+	limit, _ := strconv.ParseInt(c.Query("limit"), 0, 64)
+	cursor, _ := strconv.ParseUint(c.Query("cursor"), 0, 64)
+	req = dto.ListBookRequest{
+		Limit:  uint32(limit),
+		Cursor: cursor,
 	}
 	ctx := c.Request.Context()
 	resp, err := s.handler.ListBooks(ctx, &entities.ListBookRequest{
@@ -56,7 +60,7 @@ func (s *httpServerImpl) listBookV0(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-func (i *httpServerImpl) handleResponseError(c *gin.Context, err error) {
+func (s *httpServerImpl) handleResponseError(c *gin.Context, err error) {
 	// Todo parsing internal error into server error and return
 	c.AbortWithStatusJSON(http.StatusInternalServerError, &dto.Error{
 		Error: err.Error(),

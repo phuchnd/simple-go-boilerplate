@@ -2,24 +2,33 @@ package grpc
 
 import (
 	"context"
-	pb2 "github.com/phuchnd/simple-go-boilerplate/server/grpc/pb"
+	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories"
+	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories/entities"
+	"github.com/phuchnd/simple-go-boilerplate/server/grpc/pb"
 )
 
+//go:generate mockery --name=IGRPCService --case=snake --disable-version-string
+type IGRPCService interface {
+	ListBooks(context.Context, *pb.ListBookRequest) (*pb.ListBookResponse, error)
+}
+
 type implGRPCService struct {
-	pb2.UnimplementedSimpleGoBoilerplateServiceServer
+	bookRepo repositories.IBookRepository
 }
 
-func NewGRPCService() *implGRPCService {
-	return &implGRPCService{}
+func NewGRPCService(bookRepo repositories.IBookRepository) IGRPCService {
+	return &implGRPCService{
+		bookRepo: bookRepo,
+	}
 }
 
-func (s *implGRPCService) ListBooks(context.Context, *pb2.ListBookRequest) (*pb2.ListBookResponse, error) {
-	return &pb2.ListBookResponse{
-		Entries: []*pb2.Book{
-			{
-				ID:    1,
-				Title: "Book 1",
-			},
-		},
-	}, nil
+func (s *implGRPCService) ListBooks(ctx context.Context, req *pb.ListBookRequest) (*pb.ListBookResponse, error) {
+	if req == nil {
+		return nil, nil
+	}
+	listRes, err := s.bookRepo.ListBooks(ctx, int(req.Limit), entities.ID(req.Cursor), nil)
+	if err != nil {
+		return nil, err
+	}
+	return ListBookResponseFromDBEntitiesToPB(listRes), nil
 }

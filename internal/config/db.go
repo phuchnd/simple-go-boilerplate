@@ -14,19 +14,21 @@ type DBConfig struct {
 }
 
 type MySQLConfig struct {
-	Host         string
-	Port         int
-	Username     string
-	Password     string
-	Database     string
-	MaxIdleConns int
-	MaxOpenConns int
+	Host            string
+	Port            int
+	Username        string
+	Password        string
+	Database        string
+	MaxIdleConns    int
+	MaxOpenConns    int
+	MaxRetries      int
+	BackoffDelaysMs int
 }
 
 func GetDBConfig() *DBConfig {
 	v := cfgProvider.viper
 	var mySQLConfigPath = fmt.Sprintf("%s.%s", DBConfigName, MySQLConfigName)
-	a := &DBConfig{
+	return &DBConfig{
 		MySQL: &MySQLConfig{
 			Host:         v.GetString(mySQLConfigPath + ".host"),
 			Port:         v.GetInt(mySQLConfigPath + ".port"),
@@ -34,11 +36,10 @@ func GetDBConfig() *DBConfig {
 			Password:     v.GetString(mySQLConfigPath + ".password"),
 			Database:     v.GetString(mySQLConfigPath + ".database"),
 			MaxIdleConns: v.GetInt(mySQLConfigPath + ".max_idle_conns"),
-			MaxOpenConns: v.GetInt(mySQLConfigPath + ".max_open_conns"),
+			MaxRetries:   v.GetInt(mySQLConfigPath + ".max_retry"),
+			MaxOpenConns: v.GetInt(mySQLConfigPath + ".backoff_delays_ms"),
 		},
 	}
-	fmt.Println(a.MySQL)
-	return a
 }
 
 func initDBConfig() {

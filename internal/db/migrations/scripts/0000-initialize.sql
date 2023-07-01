@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS books (
     publication_year INT,
     price BIGINT,
     description TEXT,
-    type ENUM('Fiction', 'Non-fiction', 'Sci-fi', 'Mystery', 'Thriller'),
+    type ENUM('Fiction', 'Non-fiction', 'Sci-fi', 'Mystery', 'Thriller', 'Unknown'),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
     deleted_at TIMESTAMP NULL DEFAULT NULL

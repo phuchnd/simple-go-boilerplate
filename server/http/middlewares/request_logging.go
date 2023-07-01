@@ -37,10 +37,8 @@ func RequestLogging() gin.HandlerFunc {
 			WithFields(logrus.Fields{
 				"request":       string(requestBodyBytes),
 				"response":      blw.body.String(),
-				"keys":          c.Keys,
-				"timeStamp":     time.Now(),
+				"timestamp":     time.Now(),
 				"latency_ms":    time.Since(start).Milliseconds(),
-				"client_id":     c.ClientIP(),
 				"method":        c.Request.Method,
 				"status_code":   c.Writer.Status(),
 				"error_message": c.Errors.ByType(gin.ErrorTypePrivate).String(),
