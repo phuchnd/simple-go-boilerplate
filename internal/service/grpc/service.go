@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"fmt"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories/entities"
 	"github.com/phuchnd/simple-go-boilerplate/server/grpc/pb"
@@ -24,7 +25,7 @@ func NewGRPCService(bookRepo repositories.IBookRepository) IGRPCService {
 
 func (s *implGRPCService) ListBooks(ctx context.Context, req *pb.ListBookRequest) (*pb.ListBookResponse, error) {
 	if req == nil {
-		return nil, nil
+		return nil, fmt.Errorf("empty input")
 	}
 	listRes, err := s.bookRepo.ListBooks(ctx, int(req.Limit), entities.ID(req.Cursor), nil)
 	if err != nil {

@@ -2,10 +2,7 @@ package migrations
 
 import (
 	"embed"
-	"fmt"
-	"github.com/phuchnd/simple-go-boilerplate/internal/config"
 	migrate "github.com/rubenv/sql-migrate"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -22,24 +19,7 @@ type migratorImpl struct {
 	db         *gorm.DB
 }
 
-func NewMigrator() (IMigrator, error) {
-	dbConfig := config.GetDBConfig()
-	mySQLConfig := dbConfig.MySQL
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		mySQLConfig.Username, mySQLConfig.Password, mySQLConfig.Host, mySQLConfig.Port, mySQLConfig.Database)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	sqlDB, err := db.DB()
-	if err != nil {
-		return nil, err
-	}
-
-	sqlDB.SetMaxIdleConns(mySQLConfig.MaxIdleConns)
-	sqlDB.SetMaxOpenConns(mySQLConfig.MaxOpenConns)
-
+func NewMigrator(db *gorm.DB) (IMigrator, error) {
 	migrations := &migrate.EmbedFileSystemMigrationSource{
 		FileSystem: migrationScripts,
 		Root:       "scripts",

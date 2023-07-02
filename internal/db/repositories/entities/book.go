@@ -23,7 +23,10 @@ type Book struct {
 }
 
 type ListBookFilter struct {
-	BookType BookType
+	Author           string
+	BookType         []BookType
+	OrderBy          string
+	OrderByDirection string
 }
 
 type BookPaginator struct {

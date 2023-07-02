@@ -1,7 +1,6 @@
 package grpc
 
 import (
-	"fmt"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories/entities"
 	"github.com/phuchnd/simple-go-boilerplate/server/grpc/pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -12,7 +11,6 @@ func ListBookResponseFromDBEntitiesToPB(in *entities.BookPaginator) *pb.ListBook
 		return nil
 	}
 
-	fmt.Println("in.Items", in.Items)
 	books := make([]*pb.Book, 0, len(in.Items))
 	if in.Items != nil {
 		for _, entry := range in.Items {

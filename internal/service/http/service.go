@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	bookservice "github.com/phuchnd/simple-go-boilerplate/external/book-grpc-service"
+	"github.com/phuchnd/simple-go-boilerplate/internal/config"
 	"github.com/phuchnd/simple-go-boilerplate/internal/service/http/entities"
 	"github.com/phuchnd/simple-go-boilerplate/server/grpc/pb"
 )
@@ -17,7 +18,7 @@ type implHTTPService struct {
 }
 
 func NewHTTPService() (IHTTPService, error) {
-	bookService, err := bookservice.NewService()
+	bookService, err := bookservice.NewService(config.GetBookConfig())
 	if err != nil {
 		return nil, err
 	}

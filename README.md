@@ -1,5 +1,9 @@
 # simple-go-boilerplate
 
+### Install tools
+* Testing frameworks https://onsi.github.io/ginkgo/
+* Docker https://docs.docker.com/desktop/install/mac-install/
+
 ### Setting up local env
 ```shell
 go mod download

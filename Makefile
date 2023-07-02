@@ -9,3 +9,17 @@ gen-proto:
 go-gen:
 	echo "Generate mocks"
 	go generate ./...
+	echo "Format code"
+	go fmt ./...
+
+test-all:
+	echo "Test all"
+	ginkgo -r ./...
+
+test-unit:
+	echo "Test unit tests"
+	ginkgo -r --focus unit
+
+test-integration:
+	echo "Test integration tests"
+	ginkgo -r --focus integration

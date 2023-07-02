@@ -20,3 +20,7 @@ db:
     max_open_conns: 100
     max_retry: 5
     backoff_delays_ms: 200
+jobs:
+  simple_example:
+    cron_spec: "@every 30s"
+    enable: true

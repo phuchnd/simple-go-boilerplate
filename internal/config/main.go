@@ -22,6 +22,8 @@ func init() {
 	cfgProvider.registry.SetDefaultConfigs(cfgProvider.viper)
 	initServerConfig()
 	initDBConfig()
+	initBookConfig()
+	initCronSimpleExampleConfig()
 }
 
 func initViper(v *viper.Viper) {

@@ -9,6 +9,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+//go:generate mockery --name=IServiceClient --case=snake --disable-version-string
+type IServiceClient interface {
+	pb.SimpleGoBoilerplateServiceClient
+}
+
 //go:generate mockery --name=IBookService --case=snake --disable-version-string
 type IBookService interface {
 	ListBooks(ctx context.Context, in *pb.ListBookRequest) (*pb.ListBookResponse, error)
@@ -18,9 +23,7 @@ type bookServiceImpl struct {
 	client pb.SimpleGoBoilerplateServiceClient
 }
 
-func NewService() (IBookService, error) {
-	conf := config.GetBookConfig()
-
+func NewService(conf *config.BookConfig) (IBookService, error) {
 	cc, err := grpctransport.NewGRCPClientConn(&grpctransport.TransportConfig{
 		ServiceName:         "book-api",
 		ExternalServiceName: "book-service",

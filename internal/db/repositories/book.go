@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/avast/retry-go"
+	"github.com/go-sql-driver/mysql"
 	"github.com/phuchnd/simple-go-boilerplate/internal/config"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories/entities"
-	"github.com/phuchnd/simple-go-boilerplate/internal/generators"
 	"github.com/phuchnd/simple-go-boilerplate/internal/logging"
 	"github.com/sirupsen/logrus"
-	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"strings"
 	"time"
@@ -17,7 +16,7 @@ import (
 
 //go:generate mockery --name=IBookRepository --case=snake --disable-version-string
 type IBookRepository interface {
-	Save(ctx context.Context, data *entities.Book) error
+	Create(ctx context.Context, data *entities.Book) (*entities.Book, error)
 	GetByID(ctx context.Context, id entities.ID) (*entities.Book, error)
 	ListBooks(ctx context.Context, limit int, cursor entities.ID, filter *entities.ListBookFilter) (*entities.BookPaginator, error)
 }
@@ -28,47 +27,37 @@ type bookRepository struct {
 	idGenerator entities.IDGenerator
 }
 
-func NewBookRepository() (IBookRepository, error) {
-	sf, err := generators.NewSnowflakeIDGenerator()
-	if err != nil {
-		return nil, err
-	}
-	idGenerator, err := entities.NewIDGenerator(sf)
-	if err != nil {
-		return nil, err
-	}
-
-	dbConfig := config.GetDBConfig()
-	mySQLConfig := dbConfig.MySQL
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		mySQLConfig.Username, mySQLConfig.Password, mySQLConfig.Host, mySQLConfig.Port, mySQLConfig.Database)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	sqlDB, err := db.DB()
-	if err != nil {
-		return nil, err
-	}
-
-	sqlDB.SetMaxIdleConns(mySQLConfig.MaxIdleConns)
-	sqlDB.SetMaxOpenConns(mySQLConfig.MaxOpenConns)
-
+func NewBookRepository(db *gorm.DB, idGenerator entities.IDGenerator, cfg *config.MySQLConfig) (IBookRepository, error) {
 	return &bookRepository{
 		db:          db,
 		idGenerator: idGenerator,
-		config:      mySQLConfig,
+		config:      cfg,
 	}, nil
 }
 
-func (r *bookRepository) Save(ctx context.Context, book *entities.Book) error {
+func (r *bookRepository) Create(ctx context.Context, book *entities.Book) (*entities.Book, error) {
 	db := r.db.WithContext(ctx)
 
-	return observeWithRetry(ctx, "bookRepository.Save", r.config, func(ctx context.Context) error {
-		result := db.Model(&book).Updates(&book)
+	if book.ID == 0 {
+		book.SetID(r.idGenerator.Next())
+	}
+
+	err := observeWithRetry(ctx, "bookRepository.Create", r.config, func(ctx context.Context) error {
+		result := db.Create(&book)
 		return result.Error
 	})
+	if err != nil {
+		msqlErr, ok := err.(*mysql.MySQLError)
+		if !ok || msqlErr.Number != 1062 {
+			return nil, err
+		}
+	}
+
+	resultBook := &entities.Book{}
+	result := db.First(book, book.ID)
+
+	return resultBook, result.Error
+
 }
 
 func (r *bookRepository) GetByID(ctx context.Context, id entities.ID) (*entities.Book, error) {
@@ -86,16 +75,26 @@ func (r *bookRepository) GetByID(ctx context.Context, id entities.ID) (*entities
 func (r *bookRepository) ListBooks(ctx context.Context, limit int, cursor entities.ID, filter *entities.ListBookFilter) (*entities.BookPaginator, error) {
 	db := r.db.WithContext(ctx)
 	query := db
-	bookByField := "id"
-	bookByDirection := "ASC"
+	orderByField := "id"
+	orderByDirection := "ASC"
 
 	var queryFields []string
 	var queryConditions []interface{}
 
 	if filter != nil {
-		if filter.BookType != "" {
+		if len(filter.BookType) != 0 {
 			queryFields = append(queryFields, "type IN ?")
 			queryConditions = append(queryConditions, filter.BookType)
+		}
+		if filter.Author != "" {
+			queryFields = append(queryFields, "author = ?")
+			queryConditions = append(queryConditions, filter.Author)
+		}
+		if filter.OrderBy != "" {
+			orderByField = filter.OrderBy
+		}
+		if filter.OrderByDirection != "" {
+			orderByDirection = filter.OrderByDirection
 		}
 	}
 
@@ -115,7 +114,7 @@ func (r *bookRepository) ListBooks(ctx context.Context, limit int, cursor entiti
 		queryStrWithCursor := strings.Join(queryFields, " AND ")
 
 		result := query.Where(queryStrWithCursor, queryConditions...).
-			Order(fmt.Sprintf("%s %s", bookByField, bookByDirection)).
+			Order(fmt.Sprintf("%s %s", orderByField, orderByDirection)).
 			Limit(limit).
 			Find(&books)
 
