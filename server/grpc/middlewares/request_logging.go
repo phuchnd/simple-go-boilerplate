@@ -37,7 +37,7 @@ func RequestLogging() endpoint.Middleware {
 				if code == codes.OK {
 					logger.WithFields(args).Infof("%s: %s", metadata.Name, code.String())
 				} else {
-					logger.WithFields(args).Error("%s: %s", metadata.Name, code.String())
+					logger.WithFields(args).Errorf("%s: %s", metadata.Name, code.String())
 				}
 			}()
 

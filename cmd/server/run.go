@@ -20,7 +20,7 @@ var runCmd = &cobra.Command{
 		if serverType == "http" {
 			serviceServer, err := http.NewServer(logger)
 			if err != nil {
-				logger.Fatalf("HTTP server initialization failed: %w \n", err)
+				logger.Fatalf("HTTP server initialization failed: %s", err.Error())
 			}
 			if err := serviceServer.Start(); err != nil && err != nethttp.ErrServerClosed {
 				logger.Fatalf("HTTP listen start failed %s", err)
@@ -28,11 +28,11 @@ var runCmd = &cobra.Command{
 		} else {
 			serviceServer, err := grpc.NewServer(logger)
 			if err != nil {
-				logger.Fatalf("GRPC server initialization failed: %w \n", err)
+				logger.Fatalf("GRPC server initialization failed: %s", err.Error())
 			}
 
 			if err := serviceServer.Start(); err != nil {
-				logger.Fatalf("GRPC server starting failed: %w \n", err)
+				logger.Fatalf("GRPC server starting failed: %s", err.Error())
 			}
 		}
 	},
