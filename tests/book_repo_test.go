@@ -2,7 +2,6 @@ package tests
 
 import (
 	"context"
-	"fmt"
 	"github.com/brianvoe/gofakeit/v6"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -48,7 +47,6 @@ var _ = Describe("repositories/BookRepository", func() {
 
 		It("should create successfully", func() {
 			result, err := repository.Create(context.TODO(), input)
-			fmt.Println("Create ID51", input.ID)
 
 			Expect(err).Should(BeNil())
 			Expect(result).ShouldNot(BeNil())
@@ -60,7 +58,6 @@ var _ = Describe("repositories/BookRepository", func() {
 			Expect(input.ID).Should(Equal(entities.ID(0)))
 
 			result, err := repository.Create(context.TODO(), input)
-			fmt.Println("Create ID62", input.ID)
 
 			Expect(err).Should(BeNil())
 			Expect(result).ShouldNot(BeNil())
@@ -134,8 +131,6 @@ var _ = Describe("repositories/BookRepository", func() {
 				Type:            entities.BookType_Thriller,
 			}
 			_, _ = repository.Create(context.TODO(), input)
-
-			fmt.Println("Create ID136", input.ID)
 		})
 
 		It("should return successfully", func() {

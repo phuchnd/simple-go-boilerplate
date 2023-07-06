@@ -14,5 +14,15 @@ jobs:
       - name: Build
         run: go build -o app ./cmd
 
-      - name: Test
-        run: go test -v ./...
+#      - name: Test
+#        run: go test -v ./...
+
+      - name: Install dependencies
+        run: |
+          go install github.com/onsi/ginkgo/v2/ginkgo@latest
+
+      - name: Ginkgo test unit test
+        run: ginkgo -r --focus unit
+
+      - name: Ginkgo test unit test
+        run: ginkgo -r --focus integration
