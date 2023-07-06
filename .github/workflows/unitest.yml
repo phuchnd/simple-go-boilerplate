@@ -19,10 +19,23 @@ jobs:
 
       - name: Install dependencies
         run: |
+          go install github.com/jstemmer/go-junit-report@latest
+          go install github.com/axw/gocov/gocov@latest
           go install github.com/onsi/ginkgo/v2/ginkgo@latest
 
-      - name: Ginkgo test unit test
-        run: ginkgo -r --focus unit
+#      - name: Ginkgo test unit test
+#        run: ginkgo -r --focus unit
+#
+#      - name: Ginkgo test integration test
+#        run: ginkgo -r --focus integration
 
-      - name: Ginkgo test unit test
-        run: ginkgo -r --focus integration
+      - name: Ginkgo test
+        run: |
+          ginkgo --fail-fast -v -cover -coverprofile=coverage.txt -covermode count --junit-report=unit-test-report.xml --keep-separate-reports -r 2>&1
+          gocov convert coverage.txt > coverage-${{ matrix.go-version }}.json
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Go-results-${{ matrix.go-version }}
+          path: coverage-${{ matrix.go-version }}.json
