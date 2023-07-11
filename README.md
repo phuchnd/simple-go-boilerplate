@@ -21,6 +21,10 @@ go run ./cmd migrate -d up
 ```shell
 go run ./cmd migrate -d down
 ```
+### Start Doc server
+```shell
+go run ./cmd doc
+```
 ### Start HTTP service with default config
 ```shell
 go run ./cmd run -t http

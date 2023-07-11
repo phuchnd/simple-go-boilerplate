@@ -14,11 +14,11 @@ type ListBookRequest struct {
 type ListBookResponse struct {
 	Entries    []*Book `json:"entries"`
 	Total      uint32  `json:"total"`
-	NextCursor uint64  `json:"next_cursor"`
+	NextCursor string  `json:"next_cursor"`
 }
 
 type Book struct {
-	ID              uint64   `json:"id"`
+	ID              string   `json:"id"`
 	Title           string   `json:"title"`
 	Author          string   `json:"author"`
 	PublicationYear uint32   `json:"publication_year"`

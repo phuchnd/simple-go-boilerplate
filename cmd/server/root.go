@@ -15,6 +15,7 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.AddCommand(docCmd)
 	rootCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(migrateCmd)
 

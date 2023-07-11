@@ -1,5 +1,6 @@
 server:
   http_port: 8088
+  http_doc_port: 8099
   grpc_port: 3033
   name: "simple-go-service"
   env: "local"

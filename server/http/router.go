@@ -57,7 +57,7 @@ func (s *httpServerImpl) listBookV0(c *gin.Context) {
 		s.handleResponseError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, resp)
+	c.JSON(http.StatusOK, ListBookResponseFromEntitiesToDTO(resp))
 }
 
 func (s *httpServerImpl) handleResponseError(c *gin.Context, err error) {
