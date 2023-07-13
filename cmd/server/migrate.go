@@ -19,7 +19,7 @@ var migrateCmd = &cobra.Command{
 		if err != nil {
 			panic(fmt.Errorf("failed to create db: %w \n", err))
 		}
-		migrator, err := migrations.NewMigrator(db)
+		migrator, err := migrations.NewMigrator(db.DB())
 		if err != nil {
 			panic(fmt.Errorf("failed to create db migrator: %w \n", err))
 		}

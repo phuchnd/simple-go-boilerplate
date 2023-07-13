@@ -28,6 +28,22 @@ func (_m *IConfig) GetBookConfig() *config.BookConfig {
 	return r0
 }
 
+// GetCronHealthCheckConfig provides a mock function with given fields:
+func (_m *IConfig) GetCronHealthCheckConfig() *config.CronConfig {
+	ret := _m.Called()
+
+	var r0 *config.CronConfig
+	if rf, ok := ret.Get(0).(func() *config.CronConfig); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*config.CronConfig)
+		}
+	}
+
+	return r0
+}
+
 // GetCronSimpleExampleConfig provides a mock function with given fields:
 func (_m *IConfig) GetCronSimpleExampleConfig() *config.CronConfig {
 	ret := _m.Called()

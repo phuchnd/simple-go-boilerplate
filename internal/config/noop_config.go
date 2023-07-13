@@ -25,3 +25,7 @@ func (c *noopConfigImpl) GetBookConfig() *BookConfig {
 func (c *noopConfigImpl) GetCronSimpleExampleConfig() *CronConfig {
 	return nil
 }
+
+func (c *noopConfigImpl) GetCronHealthCheckConfig() *CronConfig {
+	return nil
+}

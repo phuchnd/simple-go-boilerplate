@@ -3,6 +3,10 @@ package http
 import (
 	"fmt"
 	"github.com/phuchnd/simple-go-boilerplate/internal/config"
+	"github.com/phuchnd/simple-go-boilerplate/internal/cron"
+	"github.com/phuchnd/simple-go-boilerplate/internal/cron/jobs"
+	mysqldb "github.com/phuchnd/simple-go-boilerplate/internal/db/mysql"
+	"github.com/phuchnd/simple-go-boilerplate/internal/health"
 	"github.com/phuchnd/simple-go-boilerplate/internal/logging"
 	http2 "github.com/phuchnd/simple-go-boilerplate/internal/service/http"
 	service "github.com/phuchnd/simple-go-boilerplate/internal/service/http"
@@ -19,11 +23,12 @@ type IServer interface {
 }
 
 type httpServerImpl struct {
-	// isRunning for health check TODO
-	isRunning bool
-	quit      chan os.Signal
+	healthCheckSvc health.IHealthCheck
+	isReady        bool
+	quit           chan os.Signal
 
 	server    *http.Server
+	runner    cron.IJobRunner
 	handler   service.IHTTPService
 	serverCfg *config.ServerConfig
 	logger    logging.Logger
@@ -35,20 +40,44 @@ func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, erro
 		return nil, err
 	}
 
+	dbConfig := cfgProvider.GetDBConfig()
+	db, err := mysqldb.NewDB(dbConfig.MySQL)
+	if err != nil {
+		return nil, err
+	}
+	healthCheckSvc := health.NewHealthCheck(db, logger)
 	s := &httpServerImpl{
-		handler:   httpServerHandler,
-		serverCfg: cfgProvider.GetServerConfig(),
-		logger:    logger,
+		handler:        httpServerHandler,
+		serverCfg:      cfgProvider.GetServerConfig(),
+		logger:         logger,
+		healthCheckSvc: healthCheckSvc,
+		runner:         initJobRunner(logger, cfgProvider, healthCheckSvc),
 	}
 	s.server = &http.Server{
 		Addr:    fmt.Sprintf(":%d", s.serverCfg.HTTPPort),
 		Handler: s.initRouter(),
 	}
+	// Init jobs
+	s.runner.Start()
 
 	return s, nil
 }
 
+func initJobRunner(logger logging.Logger, cfgProvider config.IConfig, hcSvc health.IHealthCheck) cron.IJobRunner {
+	cronSystem := cron.NewCron(logger)
+	runner := cron.NewJobRunner(logger, cronSystem)
+	cfg := cfgProvider.GetCronHealthCheckConfig()
+	simpleExampleJob := jobs.NewCronHealthCheck(hcSvc, logger, cfg)
+	_ = runner.RegisterJob(simpleExampleJob)
+
+	return runner
+}
+
 func (s *httpServerImpl) Start() error {
+	if err := s.healthCheckSvc.Check(); err != nil {
+		s.logger.Errorf("HTTP server initialization failed, dependency not ready: %s", err.Error())
+		return err
+	}
 	go func() {
 		if err := s.server.ListenAndServe(); err != nil {
 			s.logger.Errorf("failed to start HTTP server %s", err.Error())

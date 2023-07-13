@@ -14,7 +14,7 @@ func (s *httpServerImpl) initRouter() *gin.Engine {
 
 	// Heath Check Router
 	r.GET("/health", func(c *gin.Context) {
-		if s.isRunning {
+		if s.healthCheckSvc.IsReady() {
 			c.JSON(http.StatusOK, map[string]string{
 				"message": "service ready",
 			})

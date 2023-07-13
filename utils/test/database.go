@@ -61,9 +61,9 @@ func (s *DatabaseSetup) Setup() {
 		t.Error("failed to initialize database")
 		return
 	}
-	s.DB = db
+	s.DB = db.DB()
 
-	migrator, err := migrations.NewMigrator(db)
+	migrator, err := migrations.NewMigrator(db.DB())
 	if err != nil {
 		t.Error("failed to initialize database")
 		return

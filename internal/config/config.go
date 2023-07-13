@@ -11,6 +11,7 @@ type IConfig interface {
 	GetDBConfig() *DBConfig
 	GetBookConfig() *BookConfig
 	GetCronSimpleExampleConfig() *CronConfig
+	GetCronHealthCheckConfig() *CronConfig
 }
 
 type configImpl struct {
@@ -27,6 +28,7 @@ func NewConfig() IConfig {
 	initDBConfig(cfgProvider.viper)
 	initBookConfig(cfgProvider.viper)
 	initCronSimpleExampleConfig(cfgProvider.viper)
+	initHealthCheckConfig(cfgProvider.viper)
 	return cfgProvider
 }
 

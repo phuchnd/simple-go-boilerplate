@@ -9,6 +9,7 @@ import (
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories/entities"
 	"github.com/phuchnd/simple-go-boilerplate/internal/generators"
+	"github.com/phuchnd/simple-go-boilerplate/internal/health"
 	"github.com/phuchnd/simple-go-boilerplate/internal/logging"
 	grpc2 "github.com/phuchnd/simple-go-boilerplate/internal/service/grpc"
 	"github.com/phuchnd/simple-go-boilerplate/server/grpc/endpoints"
@@ -33,8 +34,10 @@ type serverImpl struct {
 
 	serverCfg *config.ServerConfig
 	logger    logging.Logger
-	isRunning bool
-	quit      chan os.Signal
+
+	healthCheckSvc health.IHealthCheck
+	isReady        bool
+	quit           chan os.Signal
 }
 
 func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, error) {
@@ -58,7 +61,7 @@ func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, erro
 	if err != nil {
 		return nil, err
 	}
-	bookRepo, err := repositories.NewBookRepository(db, idGenerator, dbConfig.MySQL)
+	bookRepo, err := repositories.NewBookRepository(db.DB(), idGenerator, dbConfig.MySQL)
 	if err != nil {
 		return nil, err
 	}
@@ -68,12 +71,14 @@ func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, erro
 		middlewares.RequestLogging(),
 		middlewares.PanicRecovery(),
 	)
+	healthCheckSvc := health.NewHealthCheck(db, logger)
 	server := &serverImpl{
 		grpcServer: NewGRPCServer(grpcEndpoints),
 		runner:     initJobRunner(logger, cfgProvider),
 
-		serverCfg: serverCfg,
-		logger:    logger,
+		serverCfg:      serverCfg,
+		logger:         logger,
+		healthCheckSvc: healthCheckSvc,
 	}
 	// Init jobs
 	server.runner.Start()
@@ -101,11 +106,17 @@ func initJobRunner(logger logging.Logger, cfgProvider config.IConfig) cron.IJobR
 }
 
 func (s *serverImpl) Start() error {
+	if err := s.healthCheckSvc.Check(); err != nil {
+		s.logger.Errorf("GRPC server initialization failed, dependency not ready: %s", err.Error())
+		return err
+	}
+
 	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.serverCfg.GRPCPort))
 	if err != nil {
 		s.logger.Errorf("GRPC server initialization failed: %s", err.Error())
 		return err
 	}
+	s.isReady = s.healthCheckSvc.IsReady()
 
 	go func() {
 		baseServer := grpc.NewServer()

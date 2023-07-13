@@ -25,3 +25,6 @@ jobs:
   simple_example:
     cron_spec: "@every 30s"
     enable: true
+  health_check:
+    cron_spec: "@every 30s"
+    enable: true

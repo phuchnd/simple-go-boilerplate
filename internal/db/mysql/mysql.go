@@ -1,13 +1,23 @@
 package mysql
 
 import (
+	"errors"
 	"fmt"
 	"github.com/phuchnd/simple-go-boilerplate/internal/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func NewDB(mySQLConfig *config.MySQLConfig) (*gorm.DB, error) {
+type IMySqlDB interface {
+	DB() *gorm.DB
+	Ping() error
+}
+
+type mySQLDBImpl struct {
+	db *gorm.DB
+}
+
+func NewDB(mySQLConfig *config.MySQLConfig) (IMySqlDB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		mySQLConfig.Username, mySQLConfig.Password, mySQLConfig.Host, mySQLConfig.Port, mySQLConfig.Database)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -23,5 +33,25 @@ func NewDB(mySQLConfig *config.MySQLConfig) (*gorm.DB, error) {
 	sqlDB.SetMaxIdleConns(mySQLConfig.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(mySQLConfig.MaxOpenConns)
 
-	return db, nil
+	return &mySQLDBImpl{
+		db: db,
+	}, nil
+}
+
+func (s *mySQLDBImpl) DB() *gorm.DB {
+	return s.db
+}
+
+func (s *mySQLDBImpl) Ping() error {
+	if s.db == nil {
+		return errors.New("db is empty")
+	}
+	db, err := s.db.DB()
+	if err != nil {
+		return err
+	}
+	if db == nil {
+		return errors.New("db is empty")
+	}
+	return db.Ping()
 }

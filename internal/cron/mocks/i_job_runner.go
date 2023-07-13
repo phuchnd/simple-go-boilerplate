@@ -26,6 +26,16 @@ func (_m *IJobRunner) RegisterJob(job cron.IJob) error {
 	return r0
 }
 
+// Start provides a mock function with given fields:
+func (_m *IJobRunner) Start() {
+	_m.Called()
+}
+
+// Stop provides a mock function with given fields:
+func (_m *IJobRunner) Stop() {
+	_m.Called()
+}
+
 // NewIJobRunner creates a new instance of IJobRunner. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewIJobRunner(t interface {
