@@ -40,7 +40,7 @@ type serverImpl struct {
 	quit           chan os.Signal
 }
 
-func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, error) {
+func NewServer(logger logging.Logger, cfgProvider config.IConfig, db mysqldb.IMySqlDB) (IServer, error) {
 	serverCfg := cfgProvider.GetServerConfig()
 
 	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%d", serverCfg.GRPCPort))
@@ -57,10 +57,6 @@ func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, erro
 	}
 
 	dbConfig := cfgProvider.GetDBConfig()
-	db, err := mysqldb.NewDB(dbConfig.MySQL)
-	if err != nil {
-		return nil, err
-	}
 	bookRepo, err := repositories.NewBookRepository(db.DB(), idGenerator, dbConfig.MySQL)
 	if err != nil {
 		return nil, err

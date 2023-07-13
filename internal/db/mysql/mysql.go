@@ -8,6 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockery --name=IMySqlDB --case=snake --disable-version-string
 type IMySqlDB interface {
 	DB() *gorm.DB
 	Ping() error

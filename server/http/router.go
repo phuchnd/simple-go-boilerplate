@@ -43,6 +43,13 @@ func (s *httpServerImpl) initRouter() *gin.Engine {
 func (s *httpServerImpl) listBookV0(c *gin.Context) {
 	var req dto.ListBookRequest
 	limit, _ := strconv.ParseInt(c.Query("limit"), 0, 64)
+	if limit <= 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, &dto.Error{
+			Error: "limit can not be empty",
+			Code:  http.StatusBadRequest,
+		})
+		return
+	}
 	cursor, _ := strconv.ParseUint(c.Query("cursor"), 0, 64)
 	req = dto.ListBookRequest{
 		Limit:  uint32(limit),

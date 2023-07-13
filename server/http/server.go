@@ -34,20 +34,10 @@ type httpServerImpl struct {
 	logger    logging.Logger
 }
 
-func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, error) {
-	httpServerHandler, err := http2.NewHTTPService(cfgProvider)
-	if err != nil {
-		return nil, err
-	}
-
-	dbConfig := cfgProvider.GetDBConfig()
-	db, err := mysqldb.NewDB(dbConfig.MySQL)
-	if err != nil {
-		return nil, err
-	}
+func NewServer(logger logging.Logger, cfgProvider config.IConfig, db mysqldb.IMySqlDB, handler http2.IHTTPService) (IServer, error) {
 	healthCheckSvc := health.NewHealthCheck(db, logger)
 	s := &httpServerImpl{
-		handler:        httpServerHandler,
+		handler:        handler,
 		serverCfg:      cfgProvider.GetServerConfig(),
 		logger:         logger,
 		healthCheckSvc: healthCheckSvc,
