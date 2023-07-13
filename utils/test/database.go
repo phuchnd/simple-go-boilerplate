@@ -5,6 +5,7 @@ import (
 	"errors"
 	. "github.com/onsi/ginkgo/v2"
 	"github.com/phuchnd/simple-go-boilerplate/internal/config"
+	"github.com/phuchnd/simple-go-boilerplate/internal/config/mocks"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/migrations"
 	mysqldb "github.com/phuchnd/simple-go-boilerplate/internal/db/mysql"
 	"github.com/phuchnd/simple-go-boilerplate/internal/db/repositories/entities"
@@ -48,10 +49,12 @@ func (s *DatabaseSetup) Setup() {
 			BackoffDelaysMs: 100,
 		},
 	}
-
-	s.Logger = logging.NewLogger(&config.ServerConfig{
+	cfgProvider := new(mocks.IConfig)
+	cfgProvider.On("GetServerConfig").Return(&config.ServerConfig{
 		Name: "service-test",
 	})
+
+	s.Logger = logging.NewLogger(cfgProvider)
 
 	db, err := mysqldb.NewDB(s.Config.MySQL)
 	if err != nil {
