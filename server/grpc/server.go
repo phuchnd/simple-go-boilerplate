@@ -37,8 +37,8 @@ type serverImpl struct {
 	quit      chan os.Signal
 }
 
-func NewServer(logger logging.Logger) (IServer, error) {
-	serverCfg := config.GetServerConfig()
+func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, error) {
+	serverCfg := cfgProvider.GetServerConfig()
 
 	grpcListener, err := net.Listen("tcp", fmt.Sprintf(":%d", serverCfg.GRPCPort))
 	if err != nil {
@@ -53,7 +53,7 @@ func NewServer(logger logging.Logger) (IServer, error) {
 		return nil, err
 	}
 
-	dbConfig := config.GetDBConfig()
+	dbConfig := cfgProvider.GetDBConfig()
 	db, err := mysqldb.NewDB(dbConfig.MySQL)
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func NewServer(logger logging.Logger) (IServer, error) {
 	)
 	server := &serverImpl{
 		grpcServer: NewGRPCServer(grpcEndpoints),
-		runner:     initJobRunner(logger),
+		runner:     initJobRunner(logger, cfgProvider),
 
 		serverCfg: serverCfg,
 		logger:    logger,
@@ -90,10 +90,10 @@ func NewServer(logger logging.Logger) (IServer, error) {
 	return server, nil
 }
 
-func initJobRunner(logger logging.Logger) cron.IJobRunner {
+func initJobRunner(logger logging.Logger, cfgProvider config.IConfig) cron.IJobRunner {
 	cronSystem := cron.NewCron(logger)
 	runner := cron.NewJobRunner(logger, cronSystem)
-	cfg := config.GetCronSimpleExampleConfig()
+	cfg := cfgProvider.GetCronSimpleExampleConfig()
 	simpleExampleJob := jobs.NewCronSimpleExample(logger, cfg)
 	_ = runner.RegisterJob(simpleExampleJob)
 

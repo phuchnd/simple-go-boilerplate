@@ -11,7 +11,7 @@ type DocumentServer struct {
 	cfg    *config.ServerConfig
 }
 
-func NewDocumentServer(cfg *config.ServerConfig) *DocumentServer {
+func NewDocumentServer(cfgProvider config.IConfig) *DocumentServer {
 	r := gin.Default()
 
 	r.Static("/internal/static", "internal/static")
@@ -22,7 +22,7 @@ func NewDocumentServer(cfg *config.ServerConfig) *DocumentServer {
 
 	return &DocumentServer{
 		engine: r,
-		cfg:    cfg,
+		cfg:    cfgProvider.GetServerConfig(),
 	}
 }
 

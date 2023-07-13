@@ -1,4 +1,4 @@
-package book_grpc_service
+package server
 
 import (
 	"testing"
@@ -9,5 +9,5 @@ import (
 
 func TestServer(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "unit/External Book Service Test")
+	RunSpecs(t, "unit/HTTP Server Test")
 }

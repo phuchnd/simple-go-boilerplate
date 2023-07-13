@@ -29,16 +29,15 @@ type httpServerImpl struct {
 	logger    logging.Logger
 }
 
-func NewServer(logger logging.Logger) (IServer, error) {
-	serverCfg := config.GetServerConfig()
-	httpServerHandler, err := http2.NewHTTPService()
+func NewServer(logger logging.Logger, cfgProvider config.IConfig) (IServer, error) {
+	httpServerHandler, err := http2.NewHTTPService(cfgProvider)
 	if err != nil {
 		return nil, err
 	}
 
 	s := &httpServerImpl{
 		handler:   httpServerHandler,
-		serverCfg: serverCfg,
+		serverCfg: cfgProvider.GetServerConfig(),
 		logger:    logger,
 	}
 	s.server = &http.Server{

@@ -1,49 +1,42 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"strings"
+)
 
-type SetDefaultConfigFunc func(v *viper.Viper)
-type GetConfigFunc func(v *viper.Viper) interface{}
-
-// ConfigOpt is a configuration on a config.
-type ConfigOpt func(c *configImpl)
-
-//go:generate mockery --name=IConfig --case=snake
+//go:generate mockery --name=IConfig --case=snake --disable-version-string
 type IConfig interface {
-	SetDefault(v *viper.Viper)
-	Get(v *viper.Viper) interface{}
+	GetServerConfig() *ServerConfig
+	GetDBConfig() *DBConfig
+	GetBookConfig() *BookConfig
+	GetCronSimpleExampleConfig() *CronConfig
 }
 
-// configImpl implements Config.
 type configImpl struct {
-	setDefaultFn SetDefaultConfigFunc
-	getFn        GetConfigFunc
+	viper *viper.Viper
 }
 
-func NewConfig(getFn GetConfigFunc, opts ...ConfigOpt) IConfig {
-	c := &configImpl{
-		getFn: getFn,
+func NewConfig() IConfig {
+	cfgProvider := &configImpl{
+		viper: viper.New(),
 	}
-
-	for _, o := range opts {
-		o(c)
-	}
-
-	return c
+	initViper(cfgProvider.viper)
+	_ = cfgProvider.viper.ReadInConfig()
+	initServerConfig(cfgProvider.viper)
+	initDBConfig(cfgProvider.viper)
+	initBookConfig(cfgProvider.viper)
+	initCronSimpleExampleConfig(cfgProvider.viper)
+	return cfgProvider
 }
 
-func (c *configImpl) SetDefault(v *viper.Viper) {
-	if c.setDefaultFn != nil {
-		c.setDefaultFn(v)
-	}
-}
-
-func (c *configImpl) Get(v *viper.Viper) interface{} {
-	return c.getFn(v)
-}
-
-func WithSetDefault(setDefaultFn SetDefaultConfigFunc) ConfigOpt {
-	return func(c *configImpl) {
-		c.setDefaultFn = setDefaultFn
-	}
+func initViper(v *viper.Viper) {
+	v.SetConfigName("app-config")
+	v.SetConfigType("yaml")
+	v.AddConfigPath("$APP_CONFIG_DIR")
+	v.AddConfigPath(".")
+	v.AddConfigPath("$HOME")
+	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+	v.SetEnvPrefix("APP")
+	v.AutomaticEnv()
 }

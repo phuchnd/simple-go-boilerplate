@@ -8,7 +8,7 @@ import (
 type contextKey struct{}
 
 var (
-	defaultLogger = NewLogger(config.GetServerConfig())
+	defaultLogger = NewLogger(config.NewNoopConfig())
 )
 
 // NewContext returns a new Context with given logger.

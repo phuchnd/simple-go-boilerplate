@@ -14,7 +14,8 @@ var migrateCmd = &cobra.Command{
 	Use:   "migrate",
 	Short: "Migrate database.",
 	Run: func(cmd *cobra.Command, args []string) {
-		db, err := mysql.NewDB(config.GetDBConfig().MySQL)
+		cfgProvider := config.NewConfig()
+		db, err := mysql.NewDB(cfgProvider.GetDBConfig().MySQL)
 		if err != nil {
 			panic(fmt.Errorf("failed to create db: %w \n", err))
 		}

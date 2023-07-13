@@ -24,8 +24,8 @@ func init() {
 }
 
 func Execute() {
-	cfg := config.GetServerConfig()
-	rootCmd.Short = cfg.Name
+	cfgProvider := config.NewConfig()
+	rootCmd.Short = cfgProvider.GetServerConfig().Name
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

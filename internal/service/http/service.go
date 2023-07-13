@@ -17,8 +17,8 @@ type implHTTPService struct {
 	bookService bookservice.IBookService
 }
 
-func NewHTTPService() (IHTTPService, error) {
-	bookService, err := bookservice.NewService(config.GetBookConfig())
+func NewHTTPService(cfgProvider config.IConfig) (IHTTPService, error) {
+	bookService, err := bookservice.NewService(cfgProvider.GetBookConfig())
 	if err != nil {
 		return nil, err
 	}

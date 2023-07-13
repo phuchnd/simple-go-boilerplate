@@ -14,11 +14,11 @@ var runCmd = &cobra.Command{
 	Short: "run the server.",
 	Run: func(cmd *cobra.Command, args []string) {
 		serverType, _ := cmd.Flags().GetString("type")
-		cfg := config.GetServerConfig()
-		logger := logging.NewLogger(cfg)
+		cfgProvider := config.NewConfig()
+		logger := logging.NewLogger(cfgProvider)
 
 		if serverType == "http" {
-			serviceServer, err := http.NewServer(logger)
+			serviceServer, err := http.NewServer(logger, cfgProvider)
 			if err != nil {
 				logger.Fatalf("HTTP server initialization failed: %s", err.Error())
 			}
@@ -26,7 +26,7 @@ var runCmd = &cobra.Command{
 				logger.Fatalf("HTTP listen start failed %s", err)
 			}
 		} else {
-			serviceServer, err := grpc.NewServer(logger)
+			serviceServer, err := grpc.NewServer(logger, cfgProvider)
 			if err != nil {
 				logger.Fatalf("GRPC server initialization failed: %s", err.Error())
 			}

@@ -11,8 +11,8 @@ var docCmd = &cobra.Command{
 	Use:   "doc",
 	Short: "run the document server.",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg := config.GetServerConfig()
-		server := doc.NewDocumentServer(cfg)
+		cfgProvider := config.NewConfig()
+		server := doc.NewDocumentServer(cfgProvider)
 
 		if err := server.Start(); err != nil {
 			panic(fmt.Errorf("server failed to start: %w", err))

@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/spf13/viper"
+)
 
 const (
 	ExternalConfigName = "external"
@@ -14,19 +17,18 @@ type BookConfig struct {
 	BackoffDelaysMs int
 }
 
-func GetBookConfig() *BookConfig {
-	v := cfgProvider.viper
+func (c *configImpl) GetBookConfig() *BookConfig {
 	var bookConfigPath = fmt.Sprintf("%s.%s", ExternalConfigName, BookConfigName)
 	return &BookConfig{
-		Host:            v.GetString(bookConfigPath + ".host"),
-		Port:            v.GetInt(bookConfigPath + ".port"),
-		MaxRetries:      v.GetInt(bookConfigPath + ".max_retries"),
-		BackoffDelaysMs: v.GetInt(bookConfigPath + ".backoff_delays_ms"),
+		Host:            c.viper.GetString(bookConfigPath + ".host"),
+		Port:            c.viper.GetInt(bookConfigPath + ".port"),
+		MaxRetries:      c.viper.GetInt(bookConfigPath + ".max_retries"),
+		BackoffDelaysMs: c.viper.GetInt(bookConfigPath + ".backoff_delays_ms"),
 	}
 }
 
-func initBookConfig() {
-	cfgProvider.viper.SetDefault(DBConfigName, map[string]interface{}{
+func initBookConfig(v *viper.Viper) {
+	v.SetDefault(DBConfigName, map[string]interface{}{
 		MySQLConfigName: map[string]interface{}{
 			"host":              "localhost",
 			"port":              3306,

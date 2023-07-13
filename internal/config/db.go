@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -25,25 +26,24 @@ type MySQLConfig struct {
 	BackoffDelaysMs int
 }
 
-func GetDBConfig() *DBConfig {
-	v := cfgProvider.viper
+func (c *configImpl) GetDBConfig() *DBConfig {
 	var mySQLConfigPath = fmt.Sprintf("%s.%s", DBConfigName, MySQLConfigName)
 	return &DBConfig{
 		MySQL: &MySQLConfig{
-			Host:         v.GetString(mySQLConfigPath + ".host"),
-			Port:         v.GetInt(mySQLConfigPath + ".port"),
-			Username:     v.GetString(mySQLConfigPath + ".username"),
-			Password:     v.GetString(mySQLConfigPath + ".password"),
-			Database:     v.GetString(mySQLConfigPath + ".database"),
-			MaxIdleConns: v.GetInt(mySQLConfigPath + ".max_idle_conns"),
-			MaxRetries:   v.GetInt(mySQLConfigPath + ".max_retry"),
-			MaxOpenConns: v.GetInt(mySQLConfigPath + ".backoff_delays_ms"),
+			Host:         c.viper.GetString(mySQLConfigPath + ".host"),
+			Port:         c.viper.GetInt(mySQLConfigPath + ".port"),
+			Username:     c.viper.GetString(mySQLConfigPath + ".username"),
+			Password:     c.viper.GetString(mySQLConfigPath + ".password"),
+			Database:     c.viper.GetString(mySQLConfigPath + ".database"),
+			MaxIdleConns: c.viper.GetInt(mySQLConfigPath + ".max_idle_conns"),
+			MaxRetries:   c.viper.GetInt(mySQLConfigPath + ".max_retry"),
+			MaxOpenConns: c.viper.GetInt(mySQLConfigPath + ".backoff_delays_ms"),
 		},
 	}
 }
 
-func initDBConfig() {
-	cfgProvider.viper.SetDefault(DBConfigName, map[string]interface{}{
+func initDBConfig(v *viper.Viper) {
+	v.SetDefault(DBConfigName, map[string]interface{}{
 		MySQLConfigName: map[string]interface{}{
 			"host":           "localhost",
 			"port":           3306,

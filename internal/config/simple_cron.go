@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/spf13/viper"
+)
 
 const (
 	JobsConfigName              = "jobs"
@@ -12,17 +15,16 @@ type CronConfig struct {
 	Enable   bool
 }
 
-func GetCronSimpleExampleConfig() *CronConfig {
-	v := cfgProvider.viper
+func (c *configImpl) GetCronSimpleExampleConfig() *CronConfig {
 	cfgPath := fmt.Sprintf("%s.%s", JobsConfigName, CronSimpleExampleConfigName)
 	return &CronConfig{
-		CronSpec: v.GetString(cfgPath + ".cron_spec"),
-		Enable:   v.GetBool(cfgPath + ".enable"),
+		CronSpec: c.viper.GetString(cfgPath + ".cron_spec"),
+		Enable:   c.viper.GetBool(cfgPath + ".enable"),
 	}
 }
 
-func initCronSimpleExampleConfig() {
-	cfgProvider.viper.SetDefault(fmt.Sprintf("%s.%s", JobsConfigName, CronSimpleExampleConfigName), map[string]interface{}{
+func initCronSimpleExampleConfig(v *viper.Viper) {
+	v.SetDefault(fmt.Sprintf("%s.%s", JobsConfigName, CronSimpleExampleConfigName), map[string]interface{}{
 		"cron_spec": "@every 5s",
 		"enable":    false,
 	})

@@ -1,5 +1,7 @@
 package config
 
+import "github.com/spf13/viper"
+
 const (
 	ServerConfigName = "server"
 	LocalEnv         = "local"
@@ -13,19 +15,18 @@ type ServerConfig struct {
 	Env         string
 }
 
-func GetServerConfig() *ServerConfig {
-	v := cfgProvider.viper
+func (c *configImpl) GetServerConfig() *ServerConfig {
 	return &ServerConfig{
-		HTTPPort:    v.GetInt(ServerConfigName + ".http_port"),
-		HTTPDocPort: v.GetInt(ServerConfigName + ".http_doc_port"),
-		GRPCPort:    v.GetInt(ServerConfigName + ".grpc_port"),
-		Name:        v.GetString(ServerConfigName + ".name"),
-		Env:         v.GetString(ServerConfigName + ".env"),
+		HTTPPort:    c.viper.GetInt(ServerConfigName + ".http_port"),
+		HTTPDocPort: c.viper.GetInt(ServerConfigName + ".http_doc_port"),
+		GRPCPort:    c.viper.GetInt(ServerConfigName + ".grpc_port"),
+		Name:        c.viper.GetString(ServerConfigName + ".name"),
+		Env:         c.viper.GetString(ServerConfigName + ".env"),
 	}
 }
 
-func initServerConfig() {
-	cfgProvider.viper.SetDefault(ServerConfigName, map[string]interface{}{
+func initServerConfig(v *viper.Viper) {
+	v.SetDefault(ServerConfigName, map[string]interface{}{
 		"http_port":     8088,
 		"http_doc_port": 8099,
 		"grpc_port":     3033,

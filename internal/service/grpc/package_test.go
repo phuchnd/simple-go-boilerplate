@@ -9,5 +9,5 @@ import (
 
 func TestServer(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "unit/Internal Service GRPC Handler")
+	RunSpecs(t, "unit/Internal Service GRPC Handler Test")
 }
