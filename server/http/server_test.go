@@ -44,7 +44,7 @@ var _ = Describe("Server", func() {
 	})
 
 	Describe("listBookV0", func() {
-		Describe("with correct input", func() {
+		Context("with correct input", func() {
 			It("should return 200 with not empty body when ListBooks() return ok", func() {
 				w := httptest.NewRecorder()
 				ctx, _ := gin.CreateTestContext(w)
@@ -86,7 +86,7 @@ var _ = Describe("Server", func() {
 				Expect(w.Code).Should(Equal(http.StatusInternalServerError))
 			})
 		})
-		Describe("with incorrect input", func() {
+		Context("with incorrect input", func() {
 			gin.SetMode(gin.TestMode)
 			It("should return 400 when limit is empty", func() {
 				w := httptest.NewRecorder()
