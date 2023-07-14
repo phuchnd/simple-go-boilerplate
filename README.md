@@ -36,5 +36,5 @@ go run ./cmd run -t grpc
 
 ### Start service with customize config file
 ```shell
-APP_CONFIG_DIR=<path-to-config-file> go run ./cmd run
+APP_CONFIG_DIR=<path-to-config-file> go run ./cmd run ...
 ```
