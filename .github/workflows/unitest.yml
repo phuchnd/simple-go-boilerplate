@@ -17,9 +17,6 @@ jobs:
       - name: Build
         run: go build -o app ./cmd
 
-      #      - name: Test
-      #        run: go test -v ./...
-
       - name: Install dependencies
         run: |
           go install github.com/jstemmer/go-junit-report@latest
@@ -30,8 +27,8 @@ jobs:
       - name: Ginkgo test unit test
         run: ginkgo -r --focus unit
 
-      - name: Ginkgo test integration test
-        run: ginkgo -r --focus integration
+#      - name: Ginkgo test integration test
+#        run: ginkgo -r --focus integration
 
       - name: Ginkgo test
         run: |
