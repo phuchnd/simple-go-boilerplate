@@ -17,6 +17,9 @@ jobs:
       - name: Build
         run: go build -o app ./cmd
 
+      #      - name: Test
+      #        run: go test -v ./...
+
       - name: Install dependencies
         run: |
           go install github.com/jstemmer/go-junit-report@latest
@@ -24,15 +27,16 @@ jobs:
           go install github.com/AlekSi/gocov-xml@latest
           go install github.com/onsi/ginkgo/v2/ginkgo@latest
 
-      - name: Ginkgo test unit test
-        run: ginkgo -r --focus unit
+#      - name: Ginkgo test unit test
+#        run: ginkgo -r --focus unit
 
 #      - name: Ginkgo test integration test
 #        run: ginkgo -r --focus integration
 
       - name: Ginkgo test
         run: |
-          ginkgo --fail-fast -v -cover -coverprofile=coverage.txt -covermode count --junit-report=test-report.xml --keep-separate-reports -r 2>&1
+          ginkgo -r --focus unit --fail-fast -v -cover -coverprofile=coverage.txt -covermode count --junit-report=test-report.xml --keep-separate-reports -r 2>&1
+#          ginkgo --fail-fast -v -cover -coverprofile=coverage.txt -covermode count --junit-report=test-report.xml --keep-separate-reports -r 2>&1
           gocov convert coverage.txt > coverage.json
           gocov-xml < coverage.json > coverage.xml
 
